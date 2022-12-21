@@ -1,0 +1,93 @@
+﻿@model CutomerRoles;
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    ViewData["Title"] = "Roles";
+}
+
+<h2 class="alert alert-light text-center ">Customer</h2>
+<div class="col-12 d-flex justify-content-between">
+    <a class="btn btn-primary " asp-area="Identity" asp-page="/Account/Register">Create</a>
+    <form method="post" asp-action="Index" autocomplete="on" >
+        <div class="d-flex">
+            <input class="form-control" placeholder="Search . ." name="SearchCustomer" />
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+        </div>
+    </form>
+    <form method="post" asp-action="Index" id="FormRole">
+             <select class="form-control" id="selectValue" asp-for="Roles" asp-items="@(new SelectList(Model.identityRoles,"Name","Name"));"></select>
+    </form>
+</div>
+
+<div class="col-12 mt-1">
+    @if (!Model.applicationUsers.Any())
+    {
+        <div class="col-12 Notice">
+            <p class="alert alert-warning h5 text-center">No User founded up till now ..!</p>
+        </div>
+    }
+    <table class="table border rounded">
+        <thead>
+            <tr>
+                <th class="text-muted">Name</th>
+                <th class="text-muted">Email</th>
+                <th class="text-muted">PhoneNumber</th>
+                <th class="text-muted">Image</th>
+                <th class="text-muted">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.applicationUsers)
+            {
+                <tr>
+                    <td>@item.DisplayName</td>
+                    <td>@item.Email</td>
+                    <td>@item.PhoneNumber</td>
+                    <td><img alt="user" class="img-thumbnail" src="data:image\/*;base64,@(Convert.ToBase64String(@item.Image))" width="100" height="70" /></td>
+                    <td class="d-flex a_Modify_customer">
+                        <a asp-action="RoleUser" asp-route-id="@item.Id" class="btn btn-secondary mt-1 mr-1">Role</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary mt-1 mr-1">Edit</a>
+                        <a class="btn btn-danger deleting mt-1" href="javascript:;" data-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+{
+  <div style="position:fixed; right:20px ; bottom:70px; z-index:1001; ">
+      <a asp-controller="Customer" asp-action="Index" class="btn btn-success ">Refresh</a>
+</div>
+}
+@section Scripts {
+    <script>
+        
+        $(document).ready(function () {
+            $("#selectValue").change(function () {
+                var vall = $(this).val();
+                $("#FormRole").submit();
+            });
+
+        $(".deleting").on("click", function () {
+            var btn = $(this);
+            var result = confirm("Are you sure to delete ?");
+            if (result) {
+                $.ajax({
+                    url: "/Customer/Delete/" + btn.data("id"),
+                    success: function (result) {
+                        if (result == "empty") {
+                            window.location.href = "/";
+                        } else {
+                        btn.parents("tr").fadeOut();
+                        }
+                    },
+                    error: function () {
+                    }
+                })
+            }
+        });
+        });
+
+    </script>
+}

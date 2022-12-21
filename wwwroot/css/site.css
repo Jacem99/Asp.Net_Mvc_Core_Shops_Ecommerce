@@ -1,0 +1,121 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+body {
+    background-color: #eefffe;
+}
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+      
+    }
+.div_role a{
+    transition:all .1s;
+}
+
+.div_role a:hover{
+    transform:translate(1.3px,1.3px);
+}
+.a_Modify_customer a {
+    transition: all .1s;
+}
+.a_Modify_customer a:hover{
+   transform:translate(.6px,.6px);
+}
+.card_transformation{
+    overflow:hidden;
+    transition:all 0.5s;
+    text-indent:25px;
+}
+    .card_transformation:hover {
+        width: 100.5%;
+        
+    }
+
+.img_transformation {
+    transition: all 0.2s;
+}
+
+    .img_transformation:hover {
+        transform: translate(.8px,.8px);
+       
+    }
+    .img_transformation .jj:hover {
+        transform: translate(.8px,.8px);
+        
+    }
+

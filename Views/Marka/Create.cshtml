@@ -1,0 +1,25 @@
+﻿@model Marka;
+@{
+    ViewData["Title"] = "Create_Marka";
+}
+
+<h1 class="alert alert-light mr-1 text-center">Create</h1>
+<div class="container rounded p-1">
+
+    <form asp-action="Create" class="col-sm-7 col-md-4" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Name" class="text-muted"></label>
+            <input asp-for="Name" class="form-control" />
+
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary text-center" value="Save" />
+            <a asp-action="Index" class="btn btn-secondary text-center">Back</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

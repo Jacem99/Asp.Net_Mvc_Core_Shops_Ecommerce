@@ -1,0 +1,95 @@
+﻿@model ViewProducts;
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1 class="alert alert-light text-center">Edit</h1>
+
+<div class="container">
+        <div  class="col-sm-12 col-md-5">
+            <form asp-action="Edit" enctype="multipart/form-data" method="post">
+                <div asp-validation-summary="All" class="text-danger h4"></div>
+                <div class="mb-2 overflow-hidden divImage">
+                    <img class="rounded col-7" src="data:image\/*;base64,@(Convert.ToBase64String(Model.product.Image))"
+                          height="210" />
+                </div>
+                <input type="hidden" asp-for="product.Id" />
+                <div class="form-group">
+                    <label asp-for="product.Title" class="text-muted"></label>
+                    <input asp-for="product.Title" class="form-control" />
+                    <span asp-validation-for="product.Title" class="alert-danger"></span>
+                </div>
+                <div class="form-group w-50">
+                    <label asp-for="product.Price" class="text-muted"></label>
+                    <input type="number" asp-for="product.Price" class="form-control" />
+                    <span asp-validation-for="product.Price" class="alert-danger"></span>
+                </div>
+                <div class="custom-file">
+                    <label asp-for="product.Image" class="custom-file-label"></label>
+                    <input type="file" accept=".png , .jpg" asp-for="product.Image"
+                           class="custom-file-input Image" />
+
+                    <span asp-validation-for="product.Image" class="alert-danger"></span>
+                </div>
+                <div class="form-group w-50">
+                    <label asp-for="product.SizeNumber" class="text-muted"></label>
+                    <input type="number" asp-for="product.SizeNumber" class="form-control" />
+                    <span asp-validation-for="product.SizeNumber" class="alert-danger"></span>
+                </div>
+                <div class="form-group ">
+                    <label asp-for="MarkaId" class="text-muted"></label>
+                    <select class="form-control" asp-for="MarkaId" asp-items="@(new SelectList(Model.Markas , "Id","Name"))">
+                    </select>
+                    <span asp-validation-for="MarkaId" class="alert-danger"></span>
+                </div>
+                <div class="form-group ">
+                    <label asp-for="ClothesClassificationId" class="text-muted"></label>
+                    <select class="form-control" asp-for="ClothesClassificationId" asp-items="@(new SelectList(Model.ClothesClassifications , "Id","Name"))">
+                    </select>
+                    <span asp-validation-for="ClothesClassificationId" class="alert-danger"></span>
+                </div>
+                <div class="form-group w-50">
+                    <label asp-for="product.Size" class="text-muted"></label>
+                    <select class="form-control" asp-for="product.Size" asp-items="@Html.GetEnumSelectList<EnumClasses.Sizing>()">
+                    </select>
+                    <span asp-validation-for="product.Size" class="alert-danger"></span>
+                </div>
+                <div class="form-group ">
+                    <label asp-for="AgeStageId" class="text-muted"></label>
+                    <select class="form-control" asp-for="AgeStageId" asp-items="@(new SelectList(Model.AgeStage , "Id","Name"))">
+                    </select>
+                    <span asp-validation-for="AgeStageId" class="alert-danger"></span>
+                </div>
+                <div class="form-group w-50">
+                    <label asp-for="product.Rate" class="text-muted"></label>
+                    <input asp-for="product.Rate" class="form-control" />
+                    <span asp-validation-for="product.Rate" class="alert-danger"></span>
+                </div>
+                <div class="form-group w-50">
+                    <label asp-for="product.Discount" class="text-muted"></label>
+                    <input asp-for="product.Discount" class="form-control" />
+                    <span asp-validation-for="product.Discount" class="alert-danger"></span>
+                </div>
+                <div class="form-group ">
+                    <input type="submit" class="btn btn-primary text-center col-5" value="Save" />
+                    <a asp-action="Index" asp-controller="Product" class="btn btn-secondary col-5">Back</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.Image').on('change', function () {
+                var resultImage = $(this).val().split('\\').pop();
+                $(this).siblings('label').text(resultImage);
+                var file = window.URL.createObjectURL(this.files[0]);
+                $('.divImage').find('img').attr('src', file);
+            });
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

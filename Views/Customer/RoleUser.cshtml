@@ -1,0 +1,63 @@
+﻿@model UsersRoles;
+@{
+    ViewData["Title"] = "RoleUser";
+}
+
+<h2 class="text-muted text-center">Role User</h2>
+<div class=" container ">
+    <div>
+        <p class=" h3 text-muted">@Model.applicationUsers.DisplayName</p>
+    </div>
+    <div class=" row d-flex justify-content-between">
+        <form asp-action="RoleUser" method="post" class="col-md-4">
+            <div class="text-danger" asp-validation-summary="All"></div>
+            <input id="userId" type="hidden" asp-for="applicationUsers.Id" />
+            <div class=" form-group">
+                <label asp-for="roles"></label>
+                <select class="form-control" id="dropDownListRole" asp-for="RoleName" asp-items="@(new SelectList(Model.roles,"Name","Name"))"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary text-center" value="Save" />
+                <a asp-action="Index" class="btn btn-secondary text-center">Back</a>
+            </div>
+        </form>
+
+        <div class="col-md-5 mt-1 " id="roles_user">
+            
+               @foreach (var item in Model.identityUserRoles)
+                {
+                    <p class="list-group-item d-flex justify-content-between">
+                        @item
+                        <a class="deleting btn btn-danger text-white" href="javascript:;" data-id="role=@item&userId=@Model.applicationUsers.Id">Delete</a>
+                    </p>
+                }
+           
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+  
+        $(document).ready(function () {
+            $(".deleting").on("click", function () {
+                var btn = $(this);
+                var result = confirm("Are you sure to delete ?");
+                if (result) {
+                    $.ajax({
+                        url: "/Customer/DeleteRoleUser?" + btn.data("id"),
+                        success: function () {
+                            btn.parents("p").remove();
+                            
+                        },
+                        error: function () {
+                            confirm("Some thing went Wrong !");
+                        }
+                    })
+                }
+            });
+       })
+    </script>
+}

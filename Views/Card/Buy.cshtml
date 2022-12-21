@@ -1,0 +1,120 @@
+﻿@inject UserManager<ApplicationUser> UserManager
+
+@model IEnumerable<Card>;
+@{
+    ViewData["Title"] = "Card";
+}
+
+<h1 class="text-muted alert-light text-center mt-3 rounded p-2">Card</h1>
+<div class="container ">
+    <div class=" text-right mb-1">
+        <a class="btn btn-secondary" asp-controller="Card" asp-action="Index" >Favourite</a>
+        <a asp-action="Index" asp-controller="Home" class="btn btn-warning">Back to Home</a>
+    </div>
+    <div class="row">
+
+        @if (!Model.Any())
+        {
+            <div class="container mt-2">
+                <p class="alert alert-light text-muted h5 text-center">No item selected in Buyed . . !</p>
+            </div>
+        }
+        @foreach (var item in Model)
+        {
+            <div style="height:200px" class="border rounded mb-1 d-flex card_transformation">
+                <img alt="Product" class="img-thumbnail w-100 col-3 " src="data:image\/*;base64,@(Convert.ToBase64String(@item.Products.Image))" />
+                <div class="col-9 d-flex justify-content-between flex-column bg-white">
+                    <div>
+                        @(item.Products.Title.Length > 145? $"{item.Products.Title.Substring(0,145)}...": item.Products.Title)
+                    </div>
+                    <div class="h6 d-flex justify-content-between">
+                        <div class="font-weight-bold">@item.Products.Marka.Name</div>
+                        <div class="font-weight-bold">@item.Products.Size</div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="font-weight-bold">@item.Products.Price$</div>
+                        <div class="ml-5">
+                            Mount:
+                            <span class="font-weight-bolder"> @item.mount</span>
+                        </div>
+                        <div>
+                            Total:
+                            <span class="font-weight-bolder">
+                                @(item.Products.Price*item.mount)$
+                            </span>
+                        </div>
+
+                    </div>
+                    <div class="mb-1">
+
+                        <div class="d-flex justify-content-between mt-2">
+                            <div class="d-block">
+                                @for (var i = 0; i < @item.Products.Rate; i++)
+                                {
+                                    <i style="color:darkorange ; width:20px" class="fa fa-star float-left"></i>
+                                }
+                            </div>
+
+                            <div class="float-left">
+                                <a class=" btn btn-primary card-link buy" href="javascript:;" data-id="@item.ProductId">Buy</a>
+                            </div>
+                            <div>
+                                <a class=" btn btn-danger deleting text-decoration-none" href="javascript:;" data-id="@item.Id" title="Remove favourite..">
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+<div style="position:fixed; right:25px ; bottom:8px; z-index:1000;">
+    <a class="btn btn-info" asp-controller="Home" asp-action="Index"><i class="bi bi-back"></i> Back </a>
+</div>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+@*
+            $(".toggle").click(function () {
+
+            })*@
+            $(".buy").on("click", function () {
+                var btn = $(this);
+                console.log(btn.data("id"));
+                $.ajax({
+                    url: "/Card/addBuyed?Id=" + btn.data("id"),
+                    success: function () {
+                        alert("Added");
+                    },
+                    error: function () {
+                        alert("Ther are Wrong");
+                    }
+                });
+            });
+            ////////////////////////
+            $(".deleting").on("click", function () {
+                var btn = $(this);
+                console.log(btn.data("id"));
+                var result = confirm("Are you sure to delete ?");
+                if (result) {
+                    $.ajax({
+                        url: "/Card/DeleteBuyed/" + btn.data("id"),
+                        success: function () {
+                            btn.parents(".card_transformation").remove();
+                        },
+                        error: function () {
+                            alert("Some thing is wrong");
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+}

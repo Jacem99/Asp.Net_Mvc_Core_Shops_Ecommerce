@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Product>;
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    ViewData["Title"] = "Roles";
+}
+<p class="alert alert-light text-center h2">Product</p>
+
+<div class="container rounded">
+
+    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+    {
+        <div><a class="btn btn-primary mb-1" asp-action="Create" asp-controller="Product">Create</a></div>
+    }
+    @if (!Model.Any())
+    {
+        <div class="col-12 Notice">
+            <p class="alert alert-warning h5 text-center">No item founded up till now ..!</p>
+        </div>
+    }
+    @foreach (var item in Model)
+    {
+        <div style="height:230px" class="border rounded mb-1 d-flex card_transformation delete_div">
+            <img alt="Product" class="img-thumbnail w-100 col-3 " src="data:image\/*;base64,@(Convert.ToBase64String(@item.Image))" />
+            <div class="col-9 d-flex justify-content-between flex-column">
+                <div>
+                    @(item.Title.Length > 240? $"{item.Title.Substring(0,240)}...": item.Title)
+                </div>
+                <div class="h6 d-flex justify-content-between">
+                    <div class="font-weight-bold">
+                        @item.Marka.Name
+                    </div>
+                    <div>@item.Size</div>
+                    <div>@item.Price$</div>
+                </div>
+                <div class="mb-1 d-flex justify-content-between">
+
+                    <div class="d-inline-flex">
+                        @for (var i = 0; i < @item.Rate; i++)
+                        {
+                            <i style="color:darkorange ; width:20px" class="fa fa-star "></i>
+                        }
+                    </div>
+
+                    <div class="d-inline-flex">
+                        <a asp-action="Edit" class="btn btn-secondary mt-1 mr-1" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-danger deleting mt-1" href="javascript:;" data-id="@item.Id">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".deleting").on("click", function () {
+                var btn = $(this);
+                var result = confirm("Are you sure to delete ?");
+                if (result) {
+                    $.ajax({
+                        url: "/Product/Delete/" + btn.data("id"),
+                        success: function () {
+                            btn.parents(".delete_div").remove();
+                        },
+                        error: function () {
+                            alert("Some thing is wrong")
+                        }
+                    })
+                }
+            });
+        })
+    </script>
+}

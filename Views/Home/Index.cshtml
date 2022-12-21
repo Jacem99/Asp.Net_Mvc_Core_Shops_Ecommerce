@@ -1,0 +1,234 @@
+﻿@model classificationsOfProducts;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ApplicationDbContext applicationDbContext
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Products";
+
+
+}
+@*style="position:fixed; top:65px ;right:1%; z-index:1003; "*@
+<div class="col-12  mb-2">
+    <form method="post" asp-action="Index" id="FormSelect" class="col-12 d-flex justify-content-between">
+        <div class="col-4">
+            <select class="form-control" id="AgeStagesId" asp-for="AgeStagesId" asp-items="@(new SelectList(Model.AgeStages,"Id","Name"));">
+                <option value="0">-Any Age-</option>
+            </select>
+        </div>
+        <div class="col-4">
+            <select class="form-control" id="HumanClassificationsId" asp-for="HumanClassificationsId" asp-items="@(new SelectList(Model.HumanClassifications,"Id","Name"));">
+                <option value="0">-Any Human Class-</option>
+            </select>
+        </div>
+        <div class="col-4">
+            <select class="form-control" id="ClothesClassificationsId" asp-for="ClothesClassificationsId" asp-items="@(new SelectList(Model.ClothesClassifications,"Id","Name"));">
+                <option value="0">-Any Product-</option>
+            </select>
+        </div>
+    </form>
+</div>
+@* style="margin-top:70px" *@
+@*style="position:fixed; top:110px ;right:14%; z-index:1003;"*@
+<div class="container border rounded ">
+
+    <div class="row mt-4">
+        @if (!Model.Product.Any())
+        {
+            <div class="col-12 Notice">
+                <p class="alert alert-warning h5 text-center">No item founded up till now ..!</p>
+            </div>
+        }
+        @foreach (var (item, index) in Model.Product.Select((value, i) => (value, i)))
+        {
+            <div class="col-sm-9 col-md-4 col-lg-3 w-100 img_transformation divProduct mb-2">
+                <div class="card">
+                    <img class="card-img-top " style="height:230px" src="data:image\/*;base64,@(Convert.ToBase64String(item.Image)) " alt="Product">
+                    <div class="card-body jj">
+                        <p class="card-title text-muted" style="height:40px">
+                            @(item.Title.Length > 27? $"{item.Title.Substring(0,27)}..": item.Title)
+                        </p>
+                        <div class="d-flex justify-content-between ">
+                            <p class="card-text h6 font-weight-bold">@item.Marka.Name</p>
+                            <p class="card-text border h6">@item.Price $</p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p class=" h6">@item.Size</p>
+                            <p class=" h6">Size: @item.SizeNumber </p>
+                        </div>
+                        <div class="mb-2">
+                            Discount: @item.Discount%
+                        </div>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <div class="d-block show mt-3">
+                                <a class="btn btn-success border rounded border-success card-link favourite w-100"
+                                   href="javascript:;" data-id="@item.Id" title="Add Favourite..">
+                                    <span style="font-size:16.5px">Favourite</span>
+                                    <i style="color:beige; font-size:16.5px" class="fa fa-heart fa-shield-heart"></i>
+                                </a>
+                            </div>
+                        }
+                        @if (!SignInManager.IsSignedIn(User))
+                        {
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<div style="position:fixed; right:20px ; bottom:70px; z-index:1002; ">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-success ">Refresh</a>
+</div>
+
+@section Scripts{
+    <script>
+
+    $("i").on("click", function () {
+        $(this).toggleClass("fa-shield-heart");
+    });
+      @*  var AgeStagesId = $("#AgeStagesId");
+        var HumanClassificationsId = $("#HumanClassificationsId");
+        var ClothesClassificationsId = $("#ClothesClassificationsId");
+        var divProduct = $(".divProduct");
+*@
+      @*  function getData() {
+            var ClassProduct = {
+                AgeStagesId: parseInt(AgeStagesId.val()),
+                HumanClassificationsId: parseInt(HumanClassificationsId.val()),
+                ClothesClassificationsId: parseInt(ClothesClassificationsId.val()),
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "/Home/ClassProducts",
+                data: ClassProduct,
+                success: function (Product) {
+
+                    if (Product.length == 0) {
+                        console.log("Empty");
+                 }
+                    else {
+                        divProduct.html("");
+
+                        $.each(Product, function (index, product) {
+
+                            var title = product.title.length > 27 ? product.title.substring(0, 27) : product.title;
+
+                        let data = '<div class="col-sm - 9 col - md - 4 col - lg - 3 w - 100 img_transformation divProduct mb - 2">'
+                                            + '<div class="card">' +
+                                                ' <img class="card-img-top " style="height:230px" src="data:image\/*;base64,' + product.image + '" alt="Product">'
+                                                 + ' <div class="card-body jj">'
+                                                    + ' <p class="card-title text-muted" style="height:40px">' +
+                                                         title + '</p>' +
+                                                        '<div class="d-flex justify-content-between ">' +
+                                                            '<p class="card-text h6 font-weight-bold">' + 'Name' + '</p >' +
+                                                            '<p class="card-text border h6">' + product.price + ' $</p>'+
+                                                        '</div>' +
+                                                        '<div class="d-flex justify-content-between">' +
+                                                              ' <p class=" h6">' + product.size + '</p>' +
+                                                              ' <p class=" h6">Size: ' + product.sizeNumber + ' </p>' +
+                                                         '</div>'
+                                                         '<div class="mb-2"> Discount: ' + product.discount + '</div>' +
+                                                         '<div class="d-block show mt-3" >' +
+                                                            '<a class="btn btn-success border rounded border-success card-link favourite w-100" href="javascript:;" data-id="' + product.id + '" title="Add Favourite..">' +
+                                                                ' <span style="font-size:16.5px">Favourite</span>' +
+                                                                '<i style="color:beige; font-size:16.5px" class="fa fa-heart fa-shield-heart"></i>' +
+                                                            '</a>'+
+                                                        '</div >'+
+                                                   '</div >'+
+                                               '</div >' +
+                                       '</div >';
+
+                            divProduct.append(data);
+                        });
+
+                     }
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }*@
+
+        $(document).ready(function () {
+           @* AgeStagesId.change(function () {
+
+            });
+
+            HumanClassificationsId.change(function () {
+                getData();
+            });
+            ClothesClassificationsId.change(function () {
+                getData();
+            });
+*@
+            $("#AgeStagesId").change(function () {
+                var vall = $(this).val();
+                $("#FormSelect").submit();
+            });
+            $("#HumanClassificationsId").change(function () {
+                var vall = $(this).val();
+                $("#FormSelect").submit();
+            });
+            $("#ClothesClassificationsId").change(function () {
+                var vall = $(this).val();
+                $("#FormSelect").submit();
+            });
+
+        //// Add Mount to Product
+        $(".show").click(function () {
+            $(".show_mount").removeClass("d-none");
+            $(".show").addClass("d-none");
+        });
+        $("#mount").keyup(function () {
+            var aData = $(".editMount");
+            aData.attr("data-id", $(this).val());
+            var data = aData.data("id");
+
+        })
+
+        $(".buy").on("click", function () {
+
+          @*  var btn = $(this)
+            var vl = btn.data("index");
+            var item = ($(".show_mount").data("index", 0)[0])
+            var item_test = ($(".show_mount").data("index", vl)[0]).att("d-none");
+            console.log(item_test)*@
+
+          var btn = $(this);
+            console.log(btn.data("id"));
+            $.ajax({
+                url: "/Card/addBuyed?Id=" + btn.data("id"),
+                success: function () {
+                    alert("Added");
+                    $(".show_mount").addClass("d-none");
+                    $(".show").removeClass("d-none");
+                },
+                error: function () {
+                    alert("Ther are Wrong");
+                    $(".show_mount").addClass("d-none");
+                    $(".show").removeClass("d-none");
+                }
+            });
+        });
+        $(".favourite").on("click", function () {
+            var btn = $(this);
+            console.log(btn.data("id"));
+            $.ajax({
+                url: "/Card/addFavourite?Id=" + btn.data("id"),
+                success: function () {
+
+                },
+                error: function () {
+                    alert("Ther are Wrong");
+                }
+            });
+        });
+    });
+    </script>
+}

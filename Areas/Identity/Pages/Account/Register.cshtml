@@ -1,0 +1,123 @@
+﻿@page
+@model RegisterModel
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ApplicationDbContext applicationDbContext
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+            <h4>Create a new account.</h4>
+            <hr />
+            <div class="d-none">
+                <img src="" id="rcvImage" alt="UserImage" class="img-thumbnail" />
+            </div>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.FirstName"></label>
+                <input asp-for="Input.FirstName" class="form-control" />
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.LastName"></label>
+                <input asp-for="Input.LastName" class="form-control" />
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" class="form-control" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="custom-file">
+                <label class="custom-file-label" asp-for="Input.Image"></label>
+                <input type="file" id="Image" class="custom-file-input" asp-for="Input.Image" accept=".png , .jpg" />
+                <span asp-validation-for="Input.Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.PhoneNumber"></label>
+                <input asp-for="Input.PhoneNumber" class="form-control" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+            {
+                <div class="form-group ">
+                    <label asp-for="RoleName" class="text-muted"></label>
+                    <select class="form-control" asp-for="RoleName" asp-items="@(new SelectList(Model.roles , "Name","Name"))">
+                    </select>
+                    <span asp-validation-for="RoleName" class="alert-danger"></span>
+                </div>
+            }
+            <div class="form-group ">
+                <label asp-for="HumanClassId" class="text-muted"></label>
+                <select class="form-control" asp-for="HumanClassId" asp-items="@(new SelectList(Model.HumanClass , "Id","Name"))">
+                </select>
+                <span asp-validation-for="HumanClassId" class="alert-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.ConfirmPassword"></label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+         
+                <button type="submit" class="btn btn-primary">
+            @(SignInManager.IsSignedIn(User) && User.IsInRole("Admin")? "Create" : "Register")</button>
+            
+            </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h4>Use another service to register.</h4>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
+                            for details on setting up this ASP.NET application to support logging in via external services.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#Image").on("change", function () {
+                var nameImage = $(this).val().split('\\').pop();
+                $(this).siblings("label").text(nameImage);
+                var file = window.URL.createObjectURL(this.files[0]);
+                $("#rcvImage").parent('div').removeClass('d-none');
+                $("#rcvImage").attr('src', file);
+            });
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}
