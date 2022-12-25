@@ -1,0 +1,31 @@
+﻿@model ClothesClassification;
+@{
+    ViewData["Title"] =Model.Id < 1 ? "Create" : "Edit";
+}
+
+<h1 class="alert alert-light text-center">@(Model.Id < 1 ? "Create" : "Edit")</h1>
+<div class="container rounded p-1">
+    <div class="row">
+        <form asp-action="Modify" class="col-md-7" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            @if (Model.Id > 0)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+            <div class="form-group col-md-9">
+                <label asp-for="Name" class="text-muted"></label>
+                <input asp-for="Name" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <input type="submit" class="btn btn-primary text-center col-md-4 mb-1" value=@(Model.Id < 1 ? "Save" : "Edit") />
+                <a asp-action="Index" class="btn btn-secondary text-center col-md-4 mb-1">Back</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

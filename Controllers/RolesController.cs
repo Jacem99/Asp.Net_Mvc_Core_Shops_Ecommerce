@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shops.Data;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,73 +23,64 @@ namespace Shops.Controllers
         {
             return View(await _dbContext.Roles.OrderBy(o => o.Name).ToListAsync());
         }
-        public IActionResult Create()
-        {
-            IdentityRole role = new IdentityRole { };
-            return View(role);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IdentityRole identityRole)
-        {
-            if (!ModelState.IsValid)
-                return View();
 
-            if (identityRole.Name == null)
-            {
-                ModelState.AddModelError("Name", "Name is Empty !");
-                return View(identityRole);
-            }
-            if (await _dbContext.Roles.AnyAsync(n => n.Name == identityRole.Name))
-            {
-                ModelState.AddModelError("Name", "Name is Exist !");
-                return View(identityRole);
-            }
-            
-            IdentityRole role = new IdentityRole
-            {
-                Name = identityRole.Name
-            };
-            await _roleManager.CreateAsync(role);
-
-            return RedirectToAction(nameof(Index));
-        }
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Modify(string? id)
         {
-            var role = await _dbContext.Roles.FindAsync(id);
-            if (role is null)
+            if (id == null)
+            {
+                IdentityRole role = new IdentityRole { Id =null};
+                return View(role);
+            }
+            var CheckRole = await _dbContext.Roles.FindAsync(id);
+            if (CheckRole is null)
                 return NotFound();
-            return View(role);
+            return View(CheckRole);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(IdentityRole identityRole)
+        public async Task<IActionResult> Modify(IdentityRole Role)
         {
             if (!ModelState.IsValid)
-                return View();
-            var role = await _dbContext.Roles.FindAsync(identityRole.Id);
+                return View(ModelState);
 
-            if (role is null)
-                return NotFound();
-
-            if (identityRole.Name == null)
+            if (Role.Name == null)
             {
                 ModelState.AddModelError("Name", "Name is Empty!");
-                return View();
+                return View(Role);
             }
-            if (await _dbContext.Roles.AnyAsync(n => n.Name == identityRole.Name))
+
+            if (await _dbContext.Roles.AnyAsync(n => n.Name == Role.Name))
             {
                 ModelState.AddModelError("Name", "Name is Exist !");
-                return View();
+                return View(Role);
             }
-           
-            role.Name = identityRole.Name;
-            role.NormalizedName = identityRole.Name.ToUpper();
+
+            if ( !await _dbContext.Roles.AnyAsync(r => r.Id == Role.Id))
+            {
+                IdentityRole role = new IdentityRole
+                {
+                    Name = Role.Name,
+                    NormalizedName = Role.Name.ToUpper()
+                };
+                await _dbContext.Roles.AddAsync(role);
+            }
+            else
+            {
+                var role = await _dbContext.Roles.FindAsync(Role.Id);
+
+                if (role is null)
+                    return NotFound();
+
+                role.Name = Role.Name;
+                role.NormalizedName = Role.Name.ToUpper();
+            }
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
+        } 
 
+
+     
         [HttpGet]
         public async Task<IActionResult> Delete(string? Id)
         {

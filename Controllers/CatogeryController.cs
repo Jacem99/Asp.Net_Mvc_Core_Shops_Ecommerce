@@ -23,41 +23,17 @@ namespace Shops.Controllers
         public async Task<IActionResult> Index()
         {
 
-            return View(await _dbContext.ClothesClassifications.ToListAsync());
+            return View(await _dbContext.ClothesClassifications.OrderBy(m => m.Name).ToListAsync());
         }
-        public IActionResult Create()
+    
+  
+        public async Task<IActionResult> Modify(int? id)
         {
-            ClothesClassification Catogery = new ClothesClassification { };
-            return View(Catogery);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClothesClassification Catogery)
-        {
-            if (!ModelState.IsValid)
-                return View(ModelState);
-
-            if (Catogery.Name == null)
+            if(id == null)
             {
-                ModelState.AddModelError("Name", "Name is Empty !");
+                ClothesClassification Catogery = new ClothesClassification { };
                 return View(Catogery);
             }
-            if (await _dbContext.ClothesClassifications.AnyAsync(n => n.Name == Catogery.Name))
-            {
-                ModelState.AddModelError("Name", "Name is Exist !");
-                return View(Catogery);
-            }
-
-            ClothesClassification catogery = new ClothesClassification
-            {
-                Name = Catogery.Name
-            };
-            await _dbContext.ClothesClassifications.AddAsync(catogery);
-            await _dbContext.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        public async Task<IActionResult> Edit(int id)
-        {
             var catogery = await _dbContext.ClothesClassifications.FindAsync(id);
             if (catogery is null)
                 return NotFound();
@@ -66,27 +42,41 @@ namespace Shops.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ClothesClassification Catogery)
+        public async Task<IActionResult> Modify(ClothesClassification Catogery)
         {
             if (!ModelState.IsValid)
                 return View(ModelState);
-            var catogery = await _dbContext.ClothesClassifications.FindAsync(Catogery.Id);
-
-            if (catogery is null)
-                return NotFound();
 
             if (Catogery.Name == null)
             {
                 ModelState.AddModelError("Name", "Name is Empty!");
                 return View(Catogery);
             }
+
             if (await _dbContext.ClothesClassifications.AnyAsync(n => n.Name == Catogery.Name))
             {
                 ModelState.AddModelError("Name", "Name is Exist !");
                 return View(Catogery);
             }
 
-            catogery.Name = Catogery.Name;
+
+            if(Catogery.Id <= 0)
+            {
+                ClothesClassification catog = new ClothesClassification
+                {
+                    Name = Catogery.Name
+                };
+                await _dbContext.ClothesClassifications.AddAsync(catog);
+            }
+            else
+            {
+                var catogery = await _dbContext.ClothesClassifications.FindAsync(Catogery.Id);
+
+                if (catogery is null)
+                     return NotFound();
+
+                catogery.Name = Catogery.Name;
+            }
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

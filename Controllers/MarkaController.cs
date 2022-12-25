@@ -22,70 +22,61 @@ namespace Shops.Controllers
         public async Task<IActionResult> Index()
         {
 
-            return View(await _dbContext.Markas.ToListAsync());
+            return View(await _dbContext.Markas.OrderBy(m=>m.Name).ToListAsync());
         }
-        public IActionResult Create()
+
+        public async Task<IActionResult> Modify(int? id)
         {
-            Marka Catogery = new Marka { };
-            return View(Catogery);
+            if (id == null)
+            {
+                Marka marka = new Marka { };
+                return View(marka);
+            }
+            var CheckMarka = await _dbContext.Markas.FindAsync(id);
+            if (CheckMarka is null)
+                return NotFound();
+            return View(CheckMarka);
         }
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Marka marka)
+        public async Task<IActionResult> Modify(Marka Marka)
         {
             if (!ModelState.IsValid)
                 return View(ModelState);
 
-            if (marka.Name == null)
-            {
-                ModelState.AddModelError("Name", "Name is Empty !");
-                return View(marka);
-            }
-            if (await _dbContext.Markas.AnyAsync(n => n.Name == marka.Name))
-            {
-                ModelState.AddModelError("Name", "Name is Exist !");
-                return View(marka);
-            }
-
-            Marka _marka = new Marka
-            {
-                Name = marka.Name
-            };
-            await _dbContext.Markas.AddAsync(_marka);
-            await _dbContext.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        public async Task<IActionResult> Edit(int id)
-        {
-            var _marka = await _dbContext.Markas.FindAsync(id);
-            if (_marka is null)
-                return NotFound();
-            return View(_marka);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Marka marka )
-        {
-            if (!ModelState.IsValid)
-                return View(ModelState);
-            var _marka = await _dbContext.Markas.FindAsync(marka.Id);
-
-            if (_marka is null)
-                return NotFound();
-
-            if (marka.Name == null)
+            if (Marka.Name == null)
             {
                 ModelState.AddModelError("Name", "Name is Empty!");
-                return View(marka);
-            }
-            if (await _dbContext.ClothesClassifications.AnyAsync(n => n.Name == marka.Name))
-            {
-                ModelState.AddModelError("Name", "Name is Exist !");
-                return View(marka);
+                return View(Marka);
             }
 
-            _marka.Name = marka.Name;
+            if (await _dbContext.Markas.AnyAsync(n => n.Name == Marka.Name))
+            {
+                ModelState.AddModelError("Name", "Name is Exist !");
+                return View(Marka);
+            }
+
+
+            if (Marka.Id <= 0)
+            {
+                Marka marka = new Marka
+                {
+                    Name = Marka.Name
+                };
+                await _dbContext.Markas.AddAsync(marka);
+            }
+            else
+            {
+                var marka = await _dbContext.Markas.FindAsync(Marka.Id);
+
+                if (marka is null)
+                    return NotFound();
+
+                marka.Name = Marka.Name;
+            }
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

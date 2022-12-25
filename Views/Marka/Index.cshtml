@@ -7,7 +7,7 @@
 <h2 class="alert alert-light text-center ">Marka</h2>
 
 <div class="container border rounded mt-5 p-2">
-    <div><a class="btn btn-primary ml-3" asp-action="Create">Create</a></div>
+    <div><a class="btn btn-primary ml-3" asp-action="Modify">Create</a></div>
     <div class="col-11 mt-1">
         <table class="table table-hover rounded">
             <thead>
@@ -23,7 +23,7 @@
                         <td>@item.Name</td>
                         <td class="d-flex justify-content-end">
                             <div>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                                <a asp-action="Modify" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
                                 <a class="btn btn-danger delete" href="javascript:;" data-id="@item.Id">Delete</a>
                             </div>
                         </td>
