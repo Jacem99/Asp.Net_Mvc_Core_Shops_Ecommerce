@@ -18,5 +18,8 @@ namespace Shops.ViewModels
         public IEnumerable<Marka> Markas { get; set; }
         public int ClothesClassificationId { get; set; }
         public IEnumerable<ClothesClassification> ClothesClassifications { get; set; }
+
+        public int HumanClassId { get; set; }
+        public IEnumerable<HumanClass> HumanClasses { get; set; }
        }
 }

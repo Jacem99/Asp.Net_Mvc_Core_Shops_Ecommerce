@@ -50,6 +50,7 @@ namespace Shops.Models
 
         public virtual ICollection<RevesationSystem> RevesationSystems { get; set; }
         public virtual ICollection<Card> Cards { get; set; }
+        public virtual ICollection<UserProducts> UserProducts { get; set; }
 
     }
 }

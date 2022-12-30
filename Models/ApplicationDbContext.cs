@@ -23,6 +23,14 @@ namespace Shops.Data
             builder.Entity<HumanClass>()
                 .HasMany(a => a.ApplicationUsers)
                 .WithOne(h => h.HumanClass).OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<UserProducts>().HasKey(a => new { a.IdentityUserId, a.ProductId });
+            builder.Entity<UserProducts>()
+                .HasOne(p => p.Product).WithMany(u => u.UserProducts)
+                .HasForeignKey(p => p.ProductId);
+            builder.Entity<UserProducts>()
+              .HasOne(p => p.ApplicationUser).WithMany(u => u.UserProducts)
+              .HasForeignKey(p => p.IdentityUserId);
         }
 
         public DbSet<Product> products { get; set; }
@@ -34,6 +42,7 @@ namespace Shops.Data
         public DbSet<Marka> Markas { get; set; } 
         public DbSet<PaymentDetail> paymentDetails { get; set; }
         public DbSet<RevesationSystem> RevesationSystems { get; set; }
+        public DbSet<UserProducts> UserProducts { get; set; }
 
     }
 }

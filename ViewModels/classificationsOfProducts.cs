@@ -26,7 +26,9 @@ namespace Shops.ViewModels
 
 
         public IEnumerable<Product> Product { get; set; }
-        public int cardId { get; set; }
-        public IEnumerable<Card> Cards { get; set; }
+ 
+        public IEnumerable<UserProducts> userProducts { get; set; }
+
+
     }
 }

@@ -32,6 +32,7 @@ namespace Shops.Models
         public virtual HumanClass HumanClass { get; set; } 
         
         public virtual ICollection<RevesationSystem> RevesationSystems { get; set; }
+        public virtual ICollection<UserProducts> UserProducts { get; set; }
 
     }
 }
