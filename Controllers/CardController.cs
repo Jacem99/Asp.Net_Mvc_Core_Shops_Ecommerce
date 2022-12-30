@@ -57,13 +57,22 @@ namespace Shops.Controllers
 
             return View(buyedCards);
         }
-        public async Task< ActionResult> addFavourite(string Id)
+        [AllowAnonymous]
+        public async Task<ActionResult> addFavourite(string Id)
         {
+            ///Identity/Account/Login
             var productId = Convert.ToInt32(Id);
-         
            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-           var checkFavourite = await _dbContext.Cards.SingleOrDefaultAsync(f => f.IdentityUserId == userId && f.ProductId == productId );
+            if(userId == null)
+            {
+                return Ok("login");
+            };
+            UserProducts userProducts = new UserProducts
+            {
+                IdentityUserId = userId,
+                ProductId = productId
+            };
+            var checkFavourite = await _dbContext.Cards.SingleOrDefaultAsync(f => f.IdentityUserId == userId && f.ProductId == productId );
             if (checkFavourite is null)
             {
                 Card card = new Card
@@ -75,6 +84,7 @@ namespace Shops.Controllers
                     mount = 1
                 };
                 await _dbContext.Cards.AddAsync(card);
+                await _dbContext.UserProducts.AddAsync(userProducts);
                 await _dbContext.SaveChangesAsync();
                 return Ok();
             }
@@ -83,6 +93,7 @@ namespace Shops.Controllers
                 if (checkFavourite.Buyed == true && checkFavourite.Favourite == false)
                 {
                     checkFavourite.Favourite = true;
+                    await _dbContext.UserProducts.AddAsync(userProducts);
                     await _dbContext.SaveChangesAsync();
                     return Ok();
                 }
@@ -136,18 +147,22 @@ namespace Shops.Controllers
             {
                 return Ok();
             }
+            UserProducts userProducts =await _dbContext.UserProducts.SingleOrDefaultAsync(u => u.ProductId == card.ProductId);
             if(card.Favourite ==true && card.Buyed == false)
             {
+                if (userProducts != null)
+                    _dbContext.UserProducts.Remove(userProducts);
+
                 _dbContext.Cards.Remove(card);
-                await _dbContext.SaveChangesAsync();
-                return Ok();
             }
             else if(card.Favourite == true && card.Buyed == true)
             {
                 card.Favourite = false;
-                await _dbContext.SaveChangesAsync();
-                return Ok();
+                if (userProducts != null)
+                    _dbContext.UserProducts.Remove(userProducts);
+
             }
+            await _dbContext.SaveChangesAsync();
             return Ok();
         }
         public async Task<IActionResult> DeleteBuyed(string id)
