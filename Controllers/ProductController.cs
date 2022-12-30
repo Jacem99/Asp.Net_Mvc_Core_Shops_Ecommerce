@@ -54,6 +54,7 @@ namespace Shops.Controllers
             vProduct.product = await _dbContext.products.FindAsync(id);
            return View(vProduct);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ViewProducts viewProducts)
@@ -85,13 +86,6 @@ namespace Shops.Controllers
                
                 file[0].CopyTo(stream);
                 var fileImage = stream.ToArray();
-/*
-                if (await _dbContext.products.AnyAsync(p => p.Image == fileImage))
-                {
-                    ModelState.AddModelError("All", "Image Exist , don't select if that file is the same !!");
-                    return View(await GetSelectItem(viewProducts));
-                }
-            */
                 prd.Image = stream.ToArray();
                 prd.Name = file[0].FileName;
             }
@@ -113,6 +107,7 @@ namespace Shops.Controllers
             prd.Discount = viewProducts.product.Discount;
             prd.AgeStageId = viewProducts.AgeStageId;
             prd.ClothesClassificationId = viewProducts.ClothesClassificationId;
+            prd.HumanClassId = viewProducts.HumanClassId;
             prd.MarkaId = viewProducts.MarkaId;
             prd.Rate = viewProducts.product.Rate;
 
@@ -120,6 +115,7 @@ namespace Shops.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+
         public async Task<IActionResult> Create()
         {
             ViewProducts viewProducts = new ViewProducts { };
@@ -179,6 +175,7 @@ namespace Shops.Controllers
                 Discount = viewProducts.product.Discount,
                 AgeStageId = viewProducts.AgeStageId,
                 ClothesClassificationId = viewProducts.ClothesClassificationId,
+               HumanClassId = viewProducts.HumanClassId,
                 MarkaId = viewProducts.MarkaId,
                 Rate = viewProducts.product.Rate
             };
@@ -190,14 +187,8 @@ namespace Shops.Controllers
         {
             viewProducts.Markas = await _dbContext.Markas.AsNoTracking().ToListAsync();
             viewProducts.ClothesClassifications = await _dbContext.ClothesClassifications.AsNoTracking().ToListAsync();
-            viewProducts.AgeStage = await _dbContext.AgeStages.AsNoTracking().ToListAsync();
-           /* if(viewProducts.product !=null)
-            {
-                if(viewProducts.product.Id != 0)
-                {
-                  viewProducts.product = await _dbContext.products.FindAsync(viewProducts.product.Id);
-                }
-            }*/
+            viewProducts.AgeStage = await _dbContext.AgeStages.OrderBy(o => o.Name).AsNoTracking().ToListAsync();
+            viewProducts.HumanClasses = await _dbContext.HumanClass.OrderBy(o => o.Name).AsNoTracking().ToListAsync();
             return viewProducts;
         }
         public async Task<IActionResult> Delete(int Id)
