@@ -12,7 +12,7 @@
                 <div asp-validation-summary="All" class="text-danger h4"></div>
                 <div class="mb-2 overflow-hidden divImage">
                     <img class="rounded col-7" src="data:image\/*;base64,@(Convert.ToBase64String(Model.product.Image))"
-                          height="210" />
+                         height="210" />
                 </div>
                 <input type="hidden" asp-for="product.Id" />
                 <div class="form-group">
@@ -60,6 +60,12 @@
                     <select class="form-control" asp-for="AgeStageId" asp-items="@(new SelectList(Model.AgeStage , "Id","Name"))">
                     </select>
                     <span asp-validation-for="AgeStageId" class="alert-danger"></span>
+                </div>
+                <div class="form-group ">
+                    <label asp-for="HumanClassId" class="text-muted"></label>
+                    <select class="form-control" asp-for="HumanClassId" asp-items="@(new SelectList(Model.HumanClasses , "Id","Name"))">
+                    </select>
+                    <span asp-validation-for="HumanClassId" class="alert-danger"></span>
                 </div>
                 <div class="form-group w-50">
                     <label asp-for="product.Rate" class="text-muted"></label>

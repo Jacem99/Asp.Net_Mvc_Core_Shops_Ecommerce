@@ -108,6 +108,7 @@ input[type=number] {
 
 .img_transformation {
     transition: all 0.2s;
+
 }
 
     .img_transformation:hover {
@@ -118,4 +119,3 @@ input[type=number] {
         transform: translate(.8px,.8px);
         
     }
-

@@ -84,7 +84,7 @@
         $(document).ready(function () {
             $(".buy").on("click", function () {
                 var btn = $(this);
-                console.log(btn.data("id"));
+               
                 $.ajax({
                     url: "/Card/addBuyed?Id=" + btn.data("id"),
                     success: function () {
@@ -98,7 +98,7 @@
             ////////////////////////
             $(".deleting").on("click", function () {
                 var btn = $(this);
-                console.log(btn.data("id"));
+              
                 var result = confirm("Are you sure to delete ?");
                 if (result) {
                     $.ajax({
